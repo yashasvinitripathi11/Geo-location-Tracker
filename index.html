@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login & Registration Form</title>
+  <!-- Import Google font - Poppins -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body{
+      min-height: 100vh;
+      width: 100%;
+      /* background: #009579; */
+      background-image: url("../Geo-location Tracker/img17.webp") ;
+    }
+    .container{
+      position: absolute; 
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      max-width: 430px;
+      width: 100%; 
+       /* background: ;  */
+      border-radius: 15px 15px 15px 15px;
+      opacity:1.5;
+      box-shadow: 4px 4px 9px black;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+      border: 2px solid rgba(0,0,0,0.3);
+   
+    }
+    .container .registration{
+      display: none;
+    }
+    #check:checked ~ .registration{
+      display: block;
+    }
+    #check:checked ~ .login{
+      display: none;
+    }
+    #check{
+      display: none;
+    }
+    .container .form{
+      padding: 2rem;
+    }
+    .form header{
+      font-size: 2rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family:'Times New Roman', Times, serif;
+    }
+     .form input{
+       height: 40px;
+       width: 100%;
+       padding: 0 15px;
+       font-size: 17px;
+       margin-bottom: 1.3rem;
+       border: 1px solid #ddd;
+       border-radius: 6px;
+       outline: none;
+     }
+     .form input:focus{
+       box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+     }
+    .form a{
+      font-size: 16px;
+      color: #009579;
+      text-decoration: none;
+    }
+    .form a:hover{
+      text-decoration: underline;
+    }
+    .form input.button{
+      color: black;
+      background:darkgray;
+      font-size: 1.2rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      margin-top: 1.7rem;
+      cursor: pointer;
+      transition: 0.4s;
+    }
+    .form input.button:hover{
+      background: gray;
+    }
+    .signup{
+      font-size: 17px;
+      text-align: center;
+    }
+    .signup label{
+      color: #009579;
+      cursor: pointer;
+    }
+    .signup label:hover{
+      text-decoration: underline;
+    }
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <input type="checkbox" id="check">
+    <div class="login form">
+      <header style="font-size: 2.5rem;">Login Page</header>
+      <form action="#" id="login-form">
+        <input type="text" placeholder="Enter your name" id="username">
+        <input type="password" placeholder="Enter your password" id="password">
+        <a href="#" style="color: black;">Forgot password?</a>
+        <input type="submit" class="button" value="Login">
+        <p id="error-message" style="color: red; text-align: center;"></p>
+      </form>
+      <div class="signup">
+        <span class="signup">Don't have an account?
+         <label for="check">Signup</label>
+        </span>
+      </div>
+    </div>
+    <div class="registration form">
+      <header>Signup</header>
+      <form action="#">
+        <input type="text" placeholder="Enter your email">
+        <input type="password" placeholder="Create a password">
+        <input type="password" placeholder="Confirm your password">
+        <input type="button" class="button" value="Signup">
+      </form>
+      <div class="signup">
+        <span class="signup">Already have an account?
+         <label for="check">Login</label>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Div -->
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    document.getElementById("login-form").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Perform your login logic here
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+
+        // Fixed credentials for demonstration
+        var expectedUsername = "demo";
+        var expectedPassword = "demo123";
+
+        // Check if the entered username and password match the expected values
+        if (username === expectedUsername && password === expectedPassword) {
+            // Hide the login form after successful login
+            document.querySelector('.login').style.display = 'none';
+            document.getElementById("error-message").innerText = ""; // Clear any previous error message
+
+            // Display the map after successful login
+            document.getElementById("map").style.display = "block";
+
+            // Initialize the map if it's the first time it's being displayed
+            if (!map) {
+                initializeMap();
+            }
+        } else {
+            // Display error message for incorrect login
+            document.getElementById("error-message").innerText = "Incorrect username or password";
+        }
+    });
+
+    var map; // Declare map variable globally
+
+    function initializeMap() {
+        // Map initialization 
+        var map = L.map('map').setView([14.0860746, 100.608406], 6);
+
+//osm layer
+var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+osm.addTo(map);
+
+if(!navigator.geolocation) {
+    console.log("Your browser doesn't support geolocation feature!")
+} else {
+    setInterval(() => {
+        navigator.geolocation.getCurrentPosition(getPosition)
+    }, 5000);
+}
+
+var marker, circle;
+
+function getPosition(position){
+    // console.log(position)
+    var lat = position.coords.latitude
+    var long = position.coords.longitude
+    var accuracy = position.coords.accuracy
+
+    if(marker) {
+        map.removeLayer(marker)
+    }
+
+    if(circle) {
+        map.removeLayer(circle)
+    }
+
+    marker = L.marker([lat, long])
+    circle = L.circle([lat, long], {radius: accuracy})
+
+    var featureGroup = L.featureGroup([marker, circle]).addTo(map)
+
+    map.fitBounds(featureGroup.getBounds())
+
+    console.log("Your coordinate is: Lat: "+ lat +" Long: "+ long+ " Accuracy: "+ accuracy)
+  }
+
+}
+  </script>
+</body>
+</html>
